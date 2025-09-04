@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>청소당번</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     body{margin:0;font-family:sans-serif;background:#0b1020;color:#fff}
     header{padding:20px;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
@@ -23,36 +24,182 @@
     <label>월 입력: <input id="monthInput" type="number" min="1" max="12"></label>
     <button id="applyBtn">적용</button>
   </header>
+
   <main>
     <div class="grid">
-      <section class="card"><h2>월요일</h2><table><thead><tr><th>역할</th><th>이름</th></tr></thead><tbody id="MonBody"></tbody></table></section>
-      <section class="card"><h2>화요일</h2><table><thead><tr><th>역할</th><th>이름</th></tr></thead><tbody id="TueBody"></tbody></table></section>
-      <section class="card"><h2>수요일</h2><table><thead><tr><th>역할</th><th>이름</th></tr></thead><tbody id="WedBody"></tbody></table></section>
-      <section class="card"><h2>목요일</h2><table><thead><tr><th>역할</th><th>이름</th></tr></thead><tbody id="ThuBody"></tbody></table></section>
-      <section class="card"><h2>금요일</h2><table><thead><tr><th>역할</th><th>이름</th></tr></thead><tbody id="FriBody"></tbody></table></section>
+      <section class="card">
+        <h2>월요일</h2>
+        <table>
+          <thead><tr><th>역할</th><th>이름</th></tr></thead>
+          <tbody id="MonBody"></tbody>
+        </table>
+      </section>
+      <section class="card">
+        <h2>화요일</h2>
+        <table>
+          <thead><tr><th>역할</th><th>이름</th></tr></thead>
+          <tbody id="TueBody"></tbody>
+        </table>
+      </section>
+      <section class="card">
+        <h2>수요일</h2>
+        <table>
+          <thead><tr><th>역할</th><th>이름</th></tr></thead>
+          <tbody id="WedBody"></tbody>
+        </table>
+      </section>
+      <section class="card">
+        <h2>목요일</h2>
+        <table>
+          <thead><tr><th>역할</th><th>이름</th></tr></thead>
+          <tbody id="ThuBody"></tbody>
+        </table>
+      </section>
+      <section class="card">
+        <h2>금요일</h2>
+        <table>
+          <thead><tr><th>역할</th><th>이름</th></tr></thead>
+          <tbody id="FriBody"></tbody>
+        </table>
+      </section>
     </div>
   </main>
 
   <script>
-    // 네가 만든 JS 전체 붙여넣기
+    // ===== 기본 설정 =====
     const BASE_MONTH = 9;
     const DAYS = ['Mon','Tue','Wed','Thu','Fri'];
+    // 역할: 위치 고정, 이름만 회전
     const FIXED_ROLES = ['팀장','특별구역','휴지통비우기'];
     let currentInputMonth = BASE_MONTH;
+
+    // ===== 학생 데이터 =====
     const students = [
-      {name:'우서현',day:'Mon'},{name:'최지아',day:'Mon'},{name:'김정윤',day:'Mon'},{name:'박소언',day:'Mon'},{name:'성지안',day:'Mon'},
-      {name:'백윤우',day:'Tue'},{name:'이은호',day:'Tue'},{name:'이지원',day:'Tue'},{name:'최윤서',day:'Tue'},{name:'권민서',day:'Tue'},
-      {name:'박수빈',day:'Wed'},{name:'성시은',day:'Wed'},{name:'조율하',day:'Wed'},{name:'홍수민',day:'Wed'},{name:'안세령',day:'Wed'},
-      {name:'박시현',day:'Thu'},{name:'예지윤',day:'Thu'},{name:'장선아',day:'Thu'},{name:'정다은',day:'Thu'},{name:'정지은',day:'Thu'},
-      {name:'김시현',day:'Fri'},{name:'문채은',day:'Fri'},{name:'이주하',day:'Fri'},{name:'문지윤',day:'Fri'},
+      {name:'우서현',day:'Mon'},
+      {name:'최지아',day:'Mon'},
+      {name:'김정윤',day:'Mon'},
+      {name:'박소언',day:'Mon'},
+      {name:'성지안',day:'Mon'},
+
+      {name:'백윤우',day:'Tue'},
+      {name:'이은호',day:'Tue'},
+      {name:'이지원',day:'Tue'},
+      {name:'최윤서',day:'Tue'},
+      {name:'권민서',day:'Tue'},
+
+      {name:'박수빈',day:'Wed'},
+      {name:'성시은',day:'Wed'},
+      {name:'조율하',day:'Wed'},
+      {name:'홍수민',day:'Wed'},
+      {name:'안세령',day:'Wed'},
+
+      {name:'박시현',day:'Thu'},
+      {name:'예지윤',day:'Thu'},
+      {name:'장선아',day:'Thu'},
+      {name:'정다은',day:'Thu'},
+      {name:'정지은',day:'Thu'},
+
+      {name:'김시현',day:'Fri'},
+      {name:'문채은',day:'Fri'},
+      {name:'이주하',day:'Fri'},
+      {name:'문지윤',day:'Fri'},
     ];
-    function monthsElapsed(m){const mm=Number(m);if(!(mm>=1&&mm<=12))throw new Error('월은 1~12 사이여야 합니다.');return mm>=BASE_MONTH?(mm-BASE_MONTH):(12-BASE_MONTH+mm);}
-    function rolesForDay(day){if(day==='Fri')return['쓸기','쓸기','팀장+휴지통비우기','특별구역'];return Array(2).fill('쓸기').concat(FIXED_ROLES);}
-    function groupByDay(list){const byDay={};DAYS.forEach(d=>byDay[d]=[]);list.forEach(s=>{if(byDay[s.day])byDay[s.day].push({...s});});for(const d of DAYS){byDay[d].sort((a,b)=>a.name.localeCompare(b.name,'ko'));}return byDay;}
-    function rotateAssignments(allStudents,elapsed){const resultByDay={};const byDay=groupByDay(allStudents);for(const d of DAYS){const roles=rolesForDay(d);const slots=roles.length;let names=byDay[d].map(s=>s.name);if(d==='Fri'){names=names.slice(0,4);const n=names.length;const k=n>0?(elapsed%n+n)%n:0;const assignments=[];for(let i=0;i<slots;i++){const student=i<n?names[(i+k)%n]:'-';assignments.push({day:d,slot:i,role:roles[i],student});}resultByDay[d]=assignments;continue;}const n=Math.min(names.length,slots);const usedNames=names.slice(0,n);const k=n>0?(elapsed%n+n)%n:0;const assignments=[];for(let i=0;i<slots;i++){const student=(i<n)?usedNames[(i+k)%n]:'-';assignments.push({day:d,slot:i,role:roles[i],student});}resultByDay[d]=assignments;}return resultByDay;}
-    function render(resultByDay){const id={Mon:'MonBody',Tue:'TueBody',Wed:'WedBody',Thu:'ThuBody',Fri:'FriBody'};for(const d of DAYS){const body=document.getElementById(id[d]);if(!body)continue;body.innerHTML='';const rows=(resultByDay[d]||[]).sort((a,b)=>a.slot-b.slot);rows.forEach(a=>{if(a.role==='(임무 미배정)')return;if(a.student==='-')return;const tr=document.createElement('tr');tr.innerHTML=`<td>${a.role}</td><td>${a.student}</td>`;body.appendChild(tr);});}}
-    function applyMonth(m){currentInputMonth=m;const elapsed=monthsElapsed(m);const rotated=rotateAssignments(students,elapsed);render(rotated);}
-    document.getElementById('applyBtn').addEventListener('click',()=>{const m=Number(document.getElementById('monthInput').value||BASE_MONTH);try{applyMonth(m);}catch(e){alert(e.message);}});
+
+    // ===== 개월수 계산 =====
+    function monthsElapsed(m){
+      const mm = Number(m);
+      if(!(mm>=1 && mm<=12)) throw new Error('월은 1~12 사이여야 합니다.');
+      return mm>=BASE_MONTH ? (mm-BASE_MONTH) : (12-BASE_MONTH+mm);
+    }
+
+    // ===== 요일별 역할 슬롯 정의 (역할 위치 고정) =====
+    // 금요일: 총 4칸 (쓸기×2, 팀장+휴지통비우기(합칸), 특별구역)
+    // 다른 요일: 쓸기×2 + 팀장 + 특별구역 + 휴지통비우기 = 5칸
+    function rolesForDay(day){
+      if(day==='Fri') return ['쓸기','쓸기','팀장+휴지통비우기','특별구역'];
+      return Array(2).fill('쓸기').concat(FIXED_ROLES);
+    }
+
+    // ===== 요일별 그룹화 =====
+    function groupByDay(list){
+      const byDay = {}; DAYS.forEach(d => byDay[d] = []);
+      list.forEach(s => { if(byDay[s.day]) byDay[s.day].push({...s}); });
+      for(const d of DAYS){ byDay[d].sort((a,b)=>a.name.localeCompare(b.name,'ko')); }
+      return byDay;
+    }
+
+    // ===== 로테이션 (이름만 회전, 역할 위치 고정) =====
+    function rotateAssignments(allStudents, elapsed){
+      const resultByDay = {};
+      const byDay = groupByDay(allStudents);
+
+      for(const d of DAYS){
+        const roles = rolesForDay(d);
+        const slots = roles.length;
+        let names = byDay[d].map(s => s.name);
+
+        // 금요일: 총 4명 고정, 4명 사이에서만 회전
+        if(d === 'Fri'){
+          names = names.slice(0, 4); // 초과 인원은 미표시
+          const n = names.length;    // 0..4
+          const k = n>0 ? (elapsed % n + n) % n : 0;
+          const assignments = [];
+          for(let i=0;i<slots;i++){
+            const student = i < n ? names[(i + k) % n] : '-';
+            assignments.push({ day:d, slot:i, role:roles[i], student });
+          }
+          resultByDay[d] = assignments;
+          continue;
+        }
+
+        // 일반 요일: 슬롯 수만큼만 사용, 이름 회전
+        const n = Math.min(names.length, slots);
+        const usedNames = names.slice(0, n);
+        const k = n>0 ? (elapsed % n + n) % n : 0;
+        const assignments = [];
+        for(let i=0;i<slots;i++){
+          const student = (i < n) ? usedNames[(i + k) % n] : '-';
+          assignments.push({ day:d, slot:i, role:roles[i], student });
+        }
+        resultByDay[d] = assignments;
+      }
+      return resultByDay;
+    }
+
+    // ===== 렌더링 =====
+    function render(resultByDay){
+      const id = { Mon:'MonBody', Tue:'TueBody', Wed:'WedBody', Thu:'ThuBody', Fri:'FriBody' };
+      for(const d of DAYS){
+        const body = document.getElementById(id[d]);
+        if(!body) continue;
+        body.innerHTML = '';
+        const rows = (resultByDay[d]||[]).sort((a,b)=>a.slot-b.slot);
+        rows.forEach(a=>{
+          // 빈 슬롯/미배정 숨김 → 표 깔끔
+          if(a.role==='(임무 미배정)') return;
+          if(a.student==='-') return;
+          const tr = document.createElement('tr');
+          tr.innerHTML = `<td>${a.role}</td><td>${a.student}</td>`;
+          body.appendChild(tr);
+        });
+      }
+    }
+
+    // ===== 적용 =====
+    function applyMonth(m){
+      currentInputMonth = m;
+      const elapsed = monthsElapsed(m);
+      const rotated = rotateAssignments(students, elapsed);
+      render(rotated);
+    }
+
+    // 이벤트
+    document.getElementById('applyBtn').addEventListener('click', ()=>{
+      const m = Number(document.getElementById('monthInput').value || BASE_MONTH);
+      try { applyMonth(m); } catch(e){ alert(e.message); }
+    });
+
+    // 초기 렌더: 기준월(09)
     applyMonth(BASE_MONTH);
   </script>
 </body>
