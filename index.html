@@ -16,6 +16,38 @@
     .card h2{margin:0 0 8px 0;font-size:16px}
     table{width:100%;border-collapse:collapse}
     th,td{border:1px solid #333;padding:6px;font-size:14px;text-align:left}
+    /* 터치 타깃, 대비, 기본 폰트 크기 살짝 키우기 */
+:root { --fg:#ffffff; --muted:#b8c0ff; }
+body{color:var(--fg)}
+header{gap:12px}
+input,button{font-size:16px; /* iOS 확대 방지 */ }
+button{background:#1c2a6b;color:#fff}
+button:active{transform:scale(0.98)}
+
+/* 그리드: 화면이 작을수록 열을 줄여서 카드가 세로로 쌓이게 */
+.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+
+/* 1024px↓: 3열 */
+@media (max-width:1024px){
+  .grid{grid-template-columns:repeat(3,1fr)}
+}
+
+/* 768px↓: 2열 + 헤더 입력 영역 줄 바꿈 */
+@media (max-width:768px){
+  header{justify-content:flex-start}
+  .grid{grid-template-columns:repeat(2,1fr)}
+  h1{font-size:18px}
+}
+
+/* 480px↓: 1열(세로 쌓기) + 폰트/여백 확대 */
+@media (max-width:480px){
+  .grid{grid-template-columns:1fr}
+  header{gap:10px}
+  input,button{padding:10px 12px}
+  .card{padding:14px}
+  th,td{font-size:15px;padding:10px}
+}
+
   </style>
 </head>
 <body>
